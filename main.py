@@ -77,28 +77,5 @@ def main():
             parser(enter_text)
 
 
-
-
-
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
-# if list_str[0] == "hello":
-    #     hello()
-    # if list_str[0] == "add":
-    #     add_contact(list_str[1], list_str[2])
-    # if list_str[0] == "change":
-    #     change_contact(list_str[1], list_str[2])
-    # if list_str[0] == "phone":
-    #     print_number(list_str[1])
-    # if list_str[0] == "show all":
-    #     show_all()
