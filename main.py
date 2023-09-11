@@ -15,7 +15,10 @@ def change_contact(name, number):
 
 
 def print_number(name):
-    print(phone_book[name])
+    if name in phone_book:
+        print(phone_book[name])
+    else:
+        print("This contact is not in the phone book")
 
 
 def show_all():
@@ -55,8 +58,12 @@ def input_error(func):
 @input_error
 def parser(string):
     list_str = string.split(" ")
-    handler = get_handler(list_str[0])
-    handler(list_str[1].title(), int(list_str[2]))
+    if list_str[0] == 'phone':
+        print('good')
+        print_number(list_str[1].title())
+    else:
+        handler = get_handler(list_str[0])
+        handler(list_str[1].title(), int(list_str[2]))
 
 
 def get_handler(command):
