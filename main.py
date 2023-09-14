@@ -1,87 +1,92 @@
 phone_book = {}
 
 
-# # Functions - handlers
-def hello():
-    print("How can I help you?")
-
-
-def add_contact(name, number):
-    phone_book[name] = number
-
-
-def change_contact(name, number):
-    phone_book[name] = number
-
-
-def print_number(name):
-    if name in phone_book:
-        print(phone_book[name])
-    else:
-        print("This contact is not in the phone book")
-
-
-def show_all():
-    if phone_book:
-        for name, number in phone_book.items():
-            print(f"{name}: {number}")
-    else:
-        print("Phone book is empty")
-
-
-def good_bye():
-    print("Good bye!")
-
-
-COMMANDS = {
-    "add": add_contact,
-    "change": change_contact,
-    "phone": print_number
-}
-
-break_command = ("good bye", "close", "exit")
-
-
 # Function decorator
 def input_error(func):
-    def inner(string):
+    def inner(*args):
         try:
-            func(string)
+            return func(*args)
+        except TypeError:
+            return "Error: insufficient data entered"
         except ValueError:
-            print("Enter correct number")
+            return "Enter correct number"
         except KeyError:
-            print("Enter correct command")
+            return "Name is not found"
+        except NameError:
+            return "Name already exists, enter other name"
     return inner
 
 
-# Parser - function
+# # Functions - handlers
 @input_error
-def parser(string):
-    list_str = string.split(" ")
-    if list_str[0] == 'phone':
-        print('good')
-        print_number(list_str[1].title())
+def add_number(name, number):
+    if name in phone_book:
+        raise NameError
     else:
-        handler = get_handler(list_str[0])
-        handler(list_str[1].title(), int(list_str[2]))
+        phone_book[name] = int(number)
+        return f"New contact {name}: {number}"
 
 
-def get_handler(command):
-    return COMMANDS[command]
+@input_error
+def change_number(name, number):
+    if name not in phone_book:
+        raise KeyError
+    else:
+        phone_book[name] = number
+        return f"Number of contact {name} changed on {number}"
+
+
+@input_error
+def show_contact_number(name):
+    if name in phone_book:
+        return f"{name.title()}: {phone_book[name]}"
+    else:
+        raise KeyError
+
+
+def show_all_phone_book():
+    if phone_book:
+        for name, number in phone_book.items():
+            return f"{name}: {number}"
+    else:
+        return "Phone book is empty"
+
+
+# Dictionary of command
+HANDLERS_WITH_PAR = {
+    "add": add_number,
+    "change": change_number,
+    "phone": show_contact_number,
+    "hello": lambda: "How can I help you?",
+    "good bye": lambda: "Good bye!",
+    "close": lambda: "Good bye!",
+    "exit": lambda: "Good bye!"
+}
+
+
+def get_handler(func):
+    def inner(*args):
+        if args:
+            result = func(*args)
+            return result
+        else:
+            result = func()
+            return result
+    return inner
 
 
 def main():
     while True:
-        enter_text = input('Enter command:').lower()
-        if enter_text == 'hello':
-            hello()
-        elif enter_text == 'show all':
-            show_all()
-        elif enter_text in break_command:
-            good_bye()
-            break
-        else:
-            parser(enter_text)
+        enter_text = input('Enter command:').lower().split(" ", maxsplit=2)
+        first_itm = enter_text[0]
+        if first_itm == "show":
+            print(show_all_phone_book())
+        if first_itm in HANDLERS_WITH_PAR:
+            handler = get_handler(HANDLERS_WITH_PAR[first_itm])
+            result = handler(*enter_text[1:])
+            print(result)
+            if result == "Good bye!":
+                break
 
 
 if __name__ == '__main__':
